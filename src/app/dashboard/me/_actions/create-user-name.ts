@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { create } from "domain";
+import { createSlug } from "@/utils/create-slug";
 
 const createUsernameSchema = z.object({
   username: z
@@ -34,13 +36,31 @@ export async function createUserName(data: CreateUsernameFormData) {
 
   try {
     const userId = session.user.id;
+
+    const slug = createSlug(data.username);
+
+    const existSlug = await prisma.user.findFirst({
+      where: { username: slug },
+    });
+
+    if (existSlug) {
+      return {
+        data: null,
+        error: "O username já está em uso, tente outro",
+      };
+    }
+
     await prisma.user.update({
       where: { id: userId },
-      data{
-
-      }
-      
+      data: {
+        username: data.username,
+      },
     });
+
+    return {
+      data: slug,
+      error: null,
+    };
   } catch (err) {
     return {
       data: null,
