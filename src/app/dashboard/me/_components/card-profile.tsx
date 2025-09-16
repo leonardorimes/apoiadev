@@ -1,6 +1,7 @@
 import { Session } from "inspector/promises";
 import Image from "next/image";
 import { Name } from "./name";
+import { Description } from "./description";
 
 interface CardProfileProps {
   user: {
@@ -31,6 +32,7 @@ export function CardProfile({ user }: CardProfileProps) {
 
       <div>
         <Name initialName={user.name ?? "Digite o seu nome..."} />
+        <Description initialDescription={user.bio ?? "Digite a sua bio..."} />
       </div>
     </section>
   );

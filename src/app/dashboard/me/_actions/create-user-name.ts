@@ -3,12 +3,12 @@
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { create } from "domain";
+
 import { createSlug } from "@/utils/create-slug";
 
 const createUsernameSchema = z.object({
   username: z
-    .string({ message: "O username é obirgatório" })
+    .string({ message: "O username é obrigatório" })
     .min(4, "O username precisa ter no minimo 4 caracteres"),
 });
 
