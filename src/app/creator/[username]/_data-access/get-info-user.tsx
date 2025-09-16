@@ -7,13 +7,15 @@ const createUserNameSchema = z.object({
   username: z.string({ message: "Nome de usuário obrigatório" }).min(1),
 });
 
-type CreateUserNameSchema = z.infer<typeof createUserNameSchema>;
+type createUserNameSchema = z.infer<typeof createUserNameSchema>;
 
-export async function getInfoUser(data: CreateUserNameSchema) {
+export async function getInfoUser(data: createUserNameSchema) {
   const schema = createUserNameSchema.safeParse(data);
 
   if (!schema.success) {
-    return null;
+    return {
+      return: null,
+    };
   }
 
   try {
@@ -30,7 +32,7 @@ export async function getInfoUser(data: CreateUserNameSchema) {
       },
     });
     return user;
-  } catch (err) {
+  } catch (error) {
     return null;
   }
 }
