@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { createPayment } from "../_actions/create-payment";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome obrigatório"),
@@ -29,7 +30,12 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export function FormDonate() {
+interface FormDonateProps {
+  creatorId: string;
+  slug: string;
+}
+
+export function FormDonate({ slug, creatorId }: FormDonateProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,8 +45,17 @@ export function FormDonate() {
     },
   });
 
-  function onSubmit(values: FormData) {
-    console.log(values);
+  async function onSubmit(data: FormData) {
+    const priceInCents = Number(data.price) * 100;
+
+    const checkout = await createPayment({
+      name: data.name,
+      message: data.message,
+      creatorId: creatorId,
+      slug: slug,
+      price: priceInCents,
+    });
+    console.log(checkout);
   }
 
   return (
@@ -58,25 +73,6 @@ export function FormDonate() {
                   placeholder="Digite seu nome"
                   {...field}
                   className="bg-white"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Mensagem */}
-        <FormField
-          control={form.control}
-          name="message"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mensagem</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Digite sua mensagem"
-                  {...field}
-                  className="bg-white h-32 resize-none"
                 />
               </FormControl>
               <FormMessage />
