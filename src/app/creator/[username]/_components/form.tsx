@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { createPayment } from "../_actions/create-payment";
+import { toast } from "sonner";
+import { getStripeJs } from "@/lib/stripe-js";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome obrigatório"),
@@ -46,17 +48,68 @@ export function FormDonate({ slug, creatorId }: FormDonateProps) {
   });
 
   async function onSubmit(data: FormData) {
-    const priceInCents = Number(data.price) * 100;
+    try {
+      const priceInCents = Number(data.price) * 100;
 
-    const checkout = await createPayment({
-      name: data.name,
-      message: data.message,
-      creatorId: creatorId,
-      slug: slug,
-      price: priceInCents,
-    });
-    console.log(checkout);
+      console.log("Dados sendo enviados:", {
+        name: data.name,
+        message: data.message,
+        creatorId: creatorId,
+        slug: slug,
+        price: priceInCents,
+      });
+
+      const checkout = await createPayment({
+        name: data.name,
+        message: data.message,
+        creatorId: creatorId,
+        slug: slug,
+        price: priceInCents,
+      });
+
+      console.log("Resposta do createPayment:", checkout);
+
+      if (checkout.error) {
+        console.error("Erro no checkout:", checkout.error);
+        toast.error(
+          typeof checkout.error === "string"
+            ? checkout.error
+            : "Erro ao processar pagamento"
+        );
+        return;
+      }
+
+      if (checkout.data?.id) {
+        console.log("Session ID obtido:", checkout.data.id);
+
+        const stripe = await getStripeJs();
+        console.log("Stripe carregado:", !!stripe);
+
+        if (!stripe) {
+          toast.error("Erro ao carregar Stripe");
+          return;
+        }
+
+        console.log("Redirecionando para checkout...");
+        const { error } = await stripe.redirectToCheckout({
+          sessionId: checkout.data.id,
+        });
+
+        if (error) {
+          console.error("Erro no redirecionamento:", error);
+          toast.error("Erro ao redirecionar para pagamento");
+        }
+      } else {
+        console.error("Session ID não encontrado na resposta");
+        toast.error("Erro: Session ID não encontrado");
+      }
+    } catch (error) {
+      console.error("Erro geral no onSubmit:", error);
+      toast.error("Erro inesperado ao processar pagamento");
+    }
   }
+
+  async function handlePaymentResponse(checkout: {}) {}
 
   return (
     <Form {...form}>
@@ -127,7 +180,9 @@ export function FormDonate({ slug, creatorId }: FormDonateProps) {
           )}
         />
 
-        <Button type="submit">Fazer doação</Button>
+        <Button type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? "Carregando..." : "Fazer doação"}
+        </Button>
       </form>
     </Form>
   );

@@ -1,13 +1,37 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function CreateAccountButton() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleCreateStripeAccount() {
     setIsLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_HOST_URL}/api/stripe/create-account`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    // ir lá na api do stripe criar a conta
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error("Falha ao criar conta de pagamento!");
+        setIsLoading(false);
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
   }
   return (
     <div className="mb-5 ">

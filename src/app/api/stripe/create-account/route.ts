@@ -10,7 +10,7 @@ export const POST = auth(async function Post(request) {
       { status: 401 }
     );
   }
-  s;
+
   try {
     const account = await stripe.accounts.create({
       controller: {

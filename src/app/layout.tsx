@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <SessionProvider>
           {children}
-          <Toaster duration={3000} />
+          {/* <Toaster /> */}
         </SessionProvider>
       </body>
     </html>
