@@ -112,10 +112,8 @@ export async function createPayment(data: CreatePaymentSchema) {
     console.log("---- createPayment END ----");
 
     return {
-      data: {
-        id: session.id,
-        url: session.url, // Adicionar a URL também como fallback
-      },
+      sessionId: session.id,
+      url: session.url, // Adicionar a URL também como fallback
     };
   } catch (error) {
     console.error("Erro detalhado no createPayment:", error);

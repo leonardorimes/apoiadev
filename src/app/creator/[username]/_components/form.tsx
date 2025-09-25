@@ -67,50 +67,44 @@ export function FormDonate({ slug, creatorId }: FormDonateProps) {
         price: priceInCents,
       });
 
+      await handlePaymentResponse(checkout);
+
       console.log("Resposta do createPayment:", checkout);
-
-      if (checkout.error) {
-        console.error("Erro no checkout:", checkout.error);
-        toast.error(
-          typeof checkout.error === "string"
-            ? checkout.error
-            : "Erro ao processar pagamento"
-        );
-        return;
-      }
-
-      if (checkout.data?.id) {
-        console.log("Session ID obtido:", checkout.data.id);
-
-        const stripe = await getStripeJs();
-        console.log("Stripe carregado:", !!stripe);
-
-        if (!stripe) {
-          toast.error("Erro ao carregar Stripe");
-          return;
-        }
-
-        console.log("Redirecionando para checkout...");
-        const { error } = await stripe.redirectToCheckout({
-          sessionId: checkout.data.id,
-        });
-
-        if (error) {
-          console.error("Erro no redirecionamento:", error);
-          toast.error("Erro ao redirecionar para pagamento");
-        }
-      } else {
-        console.error("Session ID não encontrado na resposta");
-        toast.error("Erro: Session ID não encontrado");
-      }
     } catch (error) {
       console.error("Erro geral no onSubmit:", error);
       toast.error("Erro inesperado ao processar pagamento");
     }
   }
 
-  async function handlePaymentResponse(checkout: {}) {}
+  async function handlePaymentResponse(checkout: {
+    sessionId?: string;
+    error?: string;
+  }) {
+    if (checkout.error) {
+      console.error("Erro no checkout:", checkout.error);
+      toast.error(
+        typeof checkout.error === "string"
+          ? checkout.error
+          : "Erro ao processar pagamento"
+      );
+      return;
+    }
 
+    if (!checkout.sessionId) {
+      toast.error("Falha ao criar pagamento, tente mais tarde.");
+      return;
+    }
+
+    const stripe = await getStripeJs();
+
+    if (!stripe) {
+      toast.error("Falha ao criar pagamento, tente mais tarde.");
+      return;
+    }
+    await stripe?.redirectToCheckout({
+      sessionId: checkout.sessionId,
+    });
+  }
   return (
     <Form {...form}>
       <form className="space-y-8 mt-5" onSubmit={form.handleSubmit(onSubmit)}>
