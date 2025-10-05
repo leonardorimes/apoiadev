@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma";
 import next from "next";
 
 export async function POST(req: NextRequest) {
-  console.log("👉 Webhook recebido!");
-  console.log("Headers:", Object.fromEntries(req.headers));
   const sig = req.headers.get("stripe-signature")!;
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
   let event: Stripe.Event;
