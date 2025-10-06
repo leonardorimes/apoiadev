@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
       console.log("PaymentIntent:", paymentIntent);
 
-      const donorName = session.metadata?.donorName || "Anonymous";
+      const donorName = paymentIntent.metadata.donorName || "Anonymous";
       const donorMessage = paymentIntent.metadata?.donorMessage || "";
       const donateId = paymentIntent.metadata.donationId || "";
 

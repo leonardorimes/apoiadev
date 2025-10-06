@@ -28,24 +28,24 @@ export default async function Apoia({
       />
 
       <main className="container mx-auto max-w-6xl p-4 sm-p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg-gap-8">
-          <div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg-gap-8 -mt-8 relative z-10">
+          <div className="order-2 lg:order-1">
             <AboutSection
               name={user?.name ?? "sem nome"}
               description={user?.bio ?? "sem descrição"}
             />
           </div>
 
-          <div></div>
+          <div className="order-1 lg:order-2">
+            {
+              <FormDonate
+                slug={user.username!}
+                creatorId={user.connectedStripeAccountId ?? ""}
+              />
+            }
+          </div>
         </div>
       </main>
     </div>
   );
-}
-
-{
-  /* <FormDonate
-  slug={user.username!}
-  creatorId={user.connectedStripeAccountId ?? ""}
-/>; */
 }

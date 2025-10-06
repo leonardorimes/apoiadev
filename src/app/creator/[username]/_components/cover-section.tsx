@@ -26,7 +26,7 @@ export default function CoverSection({
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
 
-      <div className="absolute bottom-2 left-0 right-0 p-4">
+      <div className="absolute  bottom-2 md:bottom-6 left-0 right-0 p-4 md:p-8">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col items-center sm:items-end sm:flex-row sm:gap-6">
             <div className="relative flex-shrink-0 mb-2 sm:mb-0">
