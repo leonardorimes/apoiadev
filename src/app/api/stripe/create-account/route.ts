@@ -13,6 +13,10 @@ export const POST = auth(async function Post(request) {
 
   try {
     const account = await stripe.accounts.create({
+      capabilities: {
+        transfers: { requested: true }, // IMPORTANTE!
+        card_payments: { requested: true },
+      },
       controller: {
         losses: { payments: "application" },
         fees: { payer: "application" },
@@ -38,6 +42,10 @@ export const POST = auth(async function Post(request) {
       refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
       type: "account_onboarding",
+      capabilities: {
+        transfers: { requested: true }, // IMPORTANTE!
+        card_payments: { requested: true },
+      },
     });
 
     return NextResponse.json({ url: accountLink?.url }, { status: 200 });
